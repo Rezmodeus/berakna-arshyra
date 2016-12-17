@@ -26,6 +26,6 @@ lagenhetstyper =
 region : List MenuItem
 region =
     [ ( "Stockholm", 1450 )
-    , ( "Malmö och Göteborg", 1350 )
+    , ( "Stockholmsnära, Göteborg, Malmö m.fl.", 1350 )
     , ( "Övriga", 1300 )
     ]

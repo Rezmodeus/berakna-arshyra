@@ -11,7 +11,7 @@ import Constants exposing (..)
    Lägenhetsyta - input
    Lägenhetspoäng - meny
    Konstant 121
-   (Årshyra * konstant)/(Lägenhetspoäng*Lägenhetsyta) = Normhyra
+   (Årshyra * konstant)/((Lägenhetspoäng+Lägenhetsyta)*77) = Normhyra
    Normhyra per kvm boarea och år - region - meny
    1450 - stockholm
    1350 - gbg malmö
@@ -20,6 +20,7 @@ import Constants exposing (..)
    formel
    Årshyra = (Normhyra*Lägenhetspoäng*Lägenhetsyta)/konstant
 -}
+-- årshyra/kvm
 
 
 calculate : Model -> Model
@@ -38,12 +39,18 @@ calculate model =
             yta > 0
 
         arsHyra =
+            ((region * 77 * (lagenhet + yta)) / 121)
+
+        perKvm =
+            arsHyra / yta
+
+        calculated =
             if test then
-                "Årshyran är:" ++ toString (round ((region * lagenhet * yta) / 121))
+                Calculated arsHyra perKvm
             else
-                defaultText
+                Calculated 0 0
     in
-        { model | arsHyraText = arsHyra }
+        { model | calculated = calculated }
 
 
 defaultText : String
@@ -51,12 +58,28 @@ defaultText =
     "Fyll i alla värden"
 
 
+arsHyraAsString : Calculated -> String
+arsHyraAsString calculated =
+    "Årshyran är:" ++ toString (round calculated.arsHyra)
+
+
+krPerKvmAsString : Calculated -> String
+krPerKvmAsString calculated =
+    "per kvm:" ++ toString (round calculated.perKvm)
+
+
+type alias Calculated =
+    { arsHyra : Float
+    , perKvm : Float
+    }
+
+
 type alias Model =
     { message : String
     , lagenhet : Menu.Model
     , region : Menu.Model
     , yta : Input.Model
-    , arsHyraText : String
+    , calculated : Calculated
     }
 
 
@@ -66,7 +89,7 @@ init =
       , lagenhet = Menu.init Constants.lagenhetstyper
       , region = Menu.init Constants.region
       , yta = Input.init "ange yta i kvm"
-      , arsHyraText = defaultText
+      , calculated = Calculated 0 0
       }
     , Cmd.none
     )
@@ -99,7 +122,16 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ h2 [] [ text model.arsHyraText ]
+        [ h2 []
+            [ model.calculated
+                |> arsHyraAsString
+                |> text
+            ]
+        , h2 []
+            [ model.calculated
+                |> krPerKvmAsString
+                |> text
+            ]
         , Html.map Yta (Input.input model.yta)
         , Html.map Lagenheter (Menu.menu model.lagenhet)
         , Html.map Region (Menu.menu model.region)
