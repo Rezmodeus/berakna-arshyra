@@ -1,6 +1,6 @@
 module Input exposing (..)
 
-import Html exposing (input, Html, span, text, div, br)
+import Html exposing (input, Html, label, text, div, br, span)
 import Html.Events exposing (onInput)
 import Html.Attributes exposing (placeholder, class, value)
 
@@ -22,7 +22,7 @@ validate : Model -> Model
 validate model =
     let
         val =
-            Result.withDefault 0 (String.toFloat model.text)
+            Result.withDefault 0 (model.text |> String.trim |> String.toFloat)
 
         hasErr =
             val <= 0 && model.text /= ""
@@ -35,9 +35,9 @@ validate model =
 
         errCls =
             if hasErr then
-                "err-span"
+                "has-error"
             else
-                ""
+                "has-success"
     in
         { model
             | value = val
@@ -61,15 +61,15 @@ update msg model =
 
 input : Model -> Html Msg
 input model =
-    div [ class "input-block" ]
-        [ span [] [ text <| model.caption ++ ":" ]
+    div [ class <| "form-group " ++ model.errCls ]
+        [ label [ class "control-label" ] [ text <| model.caption ++ ": " ++ model.errText ]
         , br [] []
         , Html.input
             [ placeholder "Text here"
+            , class "form-control"
             , onInput Change
             , value model.text
             ]
             []
         , br [] []
-        , span [ class model.errCls ] [ text model.errText ]
         ]

@@ -2,6 +2,12 @@ body {
   margin: 0;
 }
 
+.main-app {
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
+/*
 .dropbtn {
     background-color: #4CAF50;
     color: white;
@@ -45,3 +51,4 @@ body {
 .dropdown a:hover {background-color: #f1f1f1}
 
 .show {display:block;}
+*/

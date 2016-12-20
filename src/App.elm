@@ -1,6 +1,7 @@
 module App exposing (..)
 
 import Html exposing (Html, text, div, button, p, h2)
+import Html.Attributes exposing (class)
 import Menu exposing (..)
 import Input exposing (..)
 import Constants exposing (..)
@@ -121,7 +122,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
+    div [ class "main-app" ]
         [ h2 []
             [ model.calculated
                 |> arsHyraAsString

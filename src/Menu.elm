@@ -1,7 +1,7 @@
 module Menu exposing (..)
 
-import Html exposing (Html, div, text, a, button)
-import Html.Attributes exposing (class, id)
+import Html exposing (Html, div, text, a, button, span, ul, li)
+import Html.Attributes exposing (class, id, attribute)
 import Html.Events exposing (onClick)
 
 
@@ -44,29 +44,40 @@ menuItem item =
         ( str, val ) =
             item
     in
-        a
-            [ onClick (SetValue ( str, val )) ]
-            [ text str ]
+        li []
+            [ a
+                [ onClick (SetValue ( str, val )) ]
+                [ text str ]
+            ]
 
 
 menu : Model -> Html Msg
 menu model =
     let
-        cls =
+        buttonGroupCls =
             if model.open then
-                "dropdown-content show"
+                "open"
             else
-                "dropdown-content"
+                ""
+
+        expanded =
+            model.open
+                |> (toString >> String.toLower)
     in
-        div [ class "dropdown" ]
+        div [ class <| "btn-group " ++ buttonGroupCls ]
             [ button
-                [ class "dropbtn"
+                [ class "btn btn-primary dropdown-toggle"
+                , attribute "type" "button"
+                , attribute "data-toggle" "dropdown"
+                , attribute "aria-haspopup" "true"
+                , attribute "aria-expanded" expanded
                 , onClick Toggle
                 ]
-                [ Tuple.first model.selected |> text ]
-            , div
-                [ id "myDropdown"
-                , class cls
+                [ text <| (Tuple.first model.selected) ++ "  "
+                , span [ class "caret" ] []
+                ]
+            , ul
+                [ class "dropdown-menu"
                 ]
                 (List.map menuItem model.items)
             ]
